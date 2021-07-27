@@ -15,7 +15,7 @@
 - transfomation data
 - write stream data to HDFS
 ### 3. Analyst uber
-**Using Spark SQL + Matplotlib to analyze and visualize data**
+**Using Spark SQL + Matplotlib + GG Map API to analyze and visualize data**
 - Which clusters had the highest number of pickups?
 - Which hours of the day had the highest number of pickups?
 - Which clusters had the highest number of pickups during morning rush hour?
