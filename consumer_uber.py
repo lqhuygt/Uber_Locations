@@ -1,6 +1,7 @@
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, to_timestamp
+from pyspark.sql.functions import col
+import time
 
 # create spark
 spark = SparkSession.builder.appName('Streaming')\
@@ -26,13 +27,16 @@ df_uber2 = df_uber.selectExpr("split(value,',')[0] as dt",
 df_uber2.printSchema()
 
 # df_uber2.writeStream.format("console").outputMode("append").start().awaitTermination()
-df_uber2.writeStream.format("csv") \
-                    .option("path", "hdfs://localhost:9000/raw/") \
-                    .option("checkpointLocation", "hdfs://localhost:9000/checkpoints") \
-                    .outputMode("append") \
-                    .start()
+fomart_datetime = time.strftime('%Y-%m-%d_%H-%M-%S')
+path = "hdfs://localhost:9000/raws/raw_{}".format(fomart_datetime)
+checkpoint = "hdfs://localhost:9000/checkpoints/checkpoint-{}/".format(fomart_datetime)
 
-spark.stop()
+push_to_hdfs = df_uber2.writeStream.format("csv") \
+                    .option("path", path) \
+                    .option("checkpointLocation", checkpoint) \
+                    .outputMode("append") 
+
+push_to_hdfs.start().awaitTermination()
 
 
 
