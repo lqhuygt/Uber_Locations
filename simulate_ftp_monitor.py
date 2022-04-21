@@ -15,7 +15,7 @@ class  MyHandler(FileSystemEventHandler):
     def  on_created(self,  event):
         print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - Event type: {event.event_type} path : {event.src_path}")
         
-        TOPCIC_NAME = "TestTopic"
+        TOPCIC_NAME = "StreamUber"
         BOOTSTRAP_SERVER = "localhost:9092"
         producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER,value_serializer=lambda x:dumps(x).encode('utf-8'))
 

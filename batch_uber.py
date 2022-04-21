@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, from_json
+from pyspark.sql.types import StringType, StructType, StructField
+
 
 # create spark
 spark = SparkSession.builder.appName('Batch')\
@@ -16,13 +18,19 @@ df_uber_batch = spark \
       .load()
 df_uber_batch.printSchema()
 
+# create schema
+schema = StructType([ 
+    StructField("dt",StringType(), True), 
+    StructField("lat",StringType(), True), 
+    StructField("lon",StringType(), True), 
+    StructField("base", StringType(), True), 
+  ])
+
 # Parsing the messeage value into dataframe
-df_uber_batch_cast = df_uber_batch.select(col("value").cast("string")).alias("csv").select("csv.*")
-df_uber_batch_casted = df_uber_batch_cast.selectExpr("split(value,',')[0] as dt",
-                               "split(value,',')[1] as lat",
-                               "split(value,',')[2] as lon",
-                               "split(value,',')[3] as base")
+df_uber_batch_cast = df_uber_batch.select(from_json(col("value").cast("string"), schema).alias("value"))
+df_uber_batch_casted = df_uber_batch_cast.selectExpr("value.dt", "value.lat", "value.lon", "value.base")
 df_uber_batch_casted.printSchema()
+df_uber_batch_casted.show(5)
 
 # df_uber2.writeStream.format("console").outputMode("append").start().awaitTermination()
 
